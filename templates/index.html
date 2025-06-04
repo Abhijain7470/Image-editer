@@ -4,7 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Image Editor - Background Remover & Replacer</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+        font-family: Arial, sans-serif;
+        padding: 30px;
+        background: #f0f0f0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        input[type="file"],
+        select,
+        input[type="color"],
+        button {
+            padding: 8px;
+            font-size: 16px;
+        }
+        
+        button {
+            background: #1e90ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: 0.3s ease;
+        }
+        
+        button:hover {
+            background: #0066cc;
+        }
+        
+
+    </style>
 </head>
 <body>
     <div class="container">
@@ -52,6 +100,33 @@
         <a href="/history">View History</a>
     </div>
 
-    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script>
+        // Toggle UI elements based on user action and background type
+        document.addEventListener('DOMContentLoaded', function () {
+            const bgTypeSelect = document.getElementById('bg-type-select');
+            const actionSelect = document.getElementById('action-select');
+            const imagePicker = document.getElementById('image-picker');
+            const colorPicker = document.getElementById('color-picker');
+            const bgOptions = document.getElementById('bg-options');
+
+        function updateUI() {
+            const action = actionSelect.value;
+            const bgType = bgTypeSelect.value;
+
+            // Show/hide background section based on action
+            bgOptions.style.display = (action === 'replace_image' || action === 'replace_color') ? 'block' : 'none';
+
+            // Show color or image picker
+            imagePicker.style.display = (bgType === 'image') ? 'block' : 'none';
+            colorPicker.style.display = (bgType === 'color') ? 'block' : 'none';
+        }
+
+        actionSelect.addEventListener('change', updateUI);
+        bgTypeSelect.addEventListener('change', updateUI);
+
+        updateUI(); // Initialize on page load
+        });
+
+    </script>
 </body>
 </html>
