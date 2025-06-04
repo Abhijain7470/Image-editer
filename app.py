@@ -79,7 +79,13 @@ def history():
     return render_template('history.html', images=images)
 
 
-# 4. Serve Uploaded Files (Optional)
+# 4. Show Processed Result Page
+@app.route('/result/<filename>')
+def result(filename):
+    return render_template('result.html', filename=filename)
+
+
+# 5. Serve Uploaded Files (Optional)
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     """

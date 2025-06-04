@@ -1,0 +1,73 @@
+<!-- templates/result.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Processed</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: #f4f4f9;
+            text-align: center;
+            padding: 40px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        .image-preview {
+            margin: 30px auto;
+            max-width: 90%;
+            border: 5px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-group {
+            margin-top: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 40px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Your Image Has Been Processed</h2>
+
+    <div class="image-preview">
+        <img src="{{ url_for('static', filename='history/' + filename) }}" alt="Processed Image" style="max-width: 100%; height: auto;">
+    </div>
+
+    <div class="button-group">
+        <a href="{{ url_for('static', filename='history/' + filename) }}" download class="btn">⬇️ Download</a>
+        <a href="{{ url_for('index') }}" class="btn">🎨 Edit Another</a>
+        <a href="{{ url_for('history') }}" class="btn">🕘 View History</a>
+    </div>
+
+    <div class="footer">
+        <p>Image Editor & Background Remover Tool</p>
+    </div>
+
+</body>
+</html>
