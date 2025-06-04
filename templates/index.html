@@ -1,0 +1,57 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Editor - Background Remover & Replacer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Image Editor</h1>
+        <form action="/process" method="POST" enctype="multipart/form-data">
+            <label>Select Image:</label>
+            <input type="file" name="image" required><br>
+
+            <label>Action:</label>
+            <select name="action" id="action-select">
+                <option value="">Edit Image</option>
+                <option value="remove">Remove Background</option>
+                <option value="replace_image">Replace with Image</option>
+                <option value="replace_color">Replace with Color</option>
+            </select>
+
+            <div id="bg-options">
+                <label>Background Type:</label>
+                <select name="bg_type" id="bg-type-select">
+                    <option value="">Choose</option>
+                    <option value="image">Image</option>
+                    <option value="color">Color</option>
+                </select>
+
+                <!-- Image Picker -->
+                <div id="image-picker">
+                    <label>Choose Background Image:</label>
+                    <select name="background">
+                        {% for bg in backgrounds %}
+                        <option value="{{ bg }}">{{ bg }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Color Picker -->
+                <div id="color-picker">
+                    <label>Pick Color:</label>
+                    <input type="color" name="background" value="#ffffff">
+                </div>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+
+        <a href="/history">View History</a>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

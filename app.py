@@ -9,6 +9,7 @@ app = Flask(__name__)
 
 #configuration
 app.config['UPLOAD_FOLDER'] = 'static/uploads'                  # Where uploaded images are stored\app.config['HISTORY_FOLDER'] = 'static/history'               # Where processed images are saved
+app.config['HISTORY_FOLDER'] = 'static/history'
 app.config['BACKGROUND_FOLDER'] = 'static/background_samples'   # Predefined backgrounds
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg'}       # Allowed file types
 
