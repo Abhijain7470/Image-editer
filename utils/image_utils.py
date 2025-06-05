@@ -27,7 +27,7 @@ def process_image(input_path, action, background=None, bg_type=None, fill_color=
 
     # Step 1: Remove background
     no_bg_bytes = remove(original)
-    no_bg_image = Image.open(io.BytesIO(no_bg_bytes)).convert("RGBA")
+    no_bg_image = no_bg_bytes.convert("RGBA")
     result = no_bg_image
 
     # Step 2: Replace with image or color background
