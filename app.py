@@ -64,7 +64,10 @@ def process():
             background_folder=app.config['BACKGROUND_FOLDER']
         )
 
-        return render_template('result.html', output_image=output_path)
+        # Only send the relative path after `static/`
+        relative_output = os.path.relpath(output_path, app.static_folder).replace('\\','/')    # e.g. 'history/processed_xyz.png'
+        return render_template('result.html', output_image=relative_output)
+
     
     return redirect(url_for('index'))
 
@@ -80,9 +83,9 @@ def history():
 
 
 # 4. Show Processed Result Page
-@app.route('/result/<filename>')
-def result(filename):
-    return render_template('result.html', filename=filename)
+#@app.route('/result/<filename>')
+#def result(filename):
+ #   return render_template('result.html', filename=filename)
 
 
 # 5. Serve Uploaded Files (Optional)

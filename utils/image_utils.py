@@ -18,16 +18,15 @@ def process_image(input_path, action, background=None, bg_type=None, fill_color=
     - background_folder: directory containing background images
     - history_folder: where to save the processed output
 
-    Returns:
-    - output_path: path to the processed image
+     Returns:
+    - relative_output_path: relative URL path to the processed image for Flask
     """
 
     # Load original image
     original = Image.open(input_path).convert("RGBA")
 
     # Step 1: Remove background
-    no_bg_bytes = remove(original)
-    no_bg_image = no_bg_bytes.convert("RGBA")
+    no_bg_image = remove(original).convert("RGBA")
     result = no_bg_image
 
     # Step 2: Replace with image or color background
@@ -52,7 +51,12 @@ def process_image(input_path, action, background=None, bg_type=None, fill_color=
     output_filename = f"processed_{uuid.uuid4().hex}.png"
     save_folder = history_folder or 'static/history'
     os.makedirs(save_folder, exist_ok=True)
+
     output_path = os.path.join(save_folder, output_filename)
     result.save(output_path, format='PNG')
+
+
+    # ✅ Return relative path so Flask can serve it
+    return os.path.join("static", "history", output_filename)
 
     return output_path
