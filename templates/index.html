@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,9 +5,9 @@
     <title>Image Editor - Background Remover & Replacer</title>
     <style>
         body {
-        font-family: Arial, sans-serif;
-        padding: 30px;
-        background: #f0f0f0;
+            font-family: Arial, sans-serif;
+            padding: 30px;
+            background: #f0f0f0;
         }
 
         .container {
@@ -19,114 +18,176 @@
             border-radius: 12px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        
+
         h1 {
             text-align: center;
         }
-        
+
         form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
-        
-        input[type="file"],
-        select,
-        input[type="color"],
-        button {
-            padding: 8px;
+
+        .dropzone {
+            border: 2px dashed #ccc;
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            color: #999;
+            transition: 0.3s ease;
+            cursor: pointer;
+            max-width: 300px;
+            margin: auto;
+            width: 80%;
+
+        }
+
+        .dropzone.dragover {
+            border-color: #1e90ff;
+            color: #333;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        .file-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        select, input[type="color"], button {
+            padding: 10px;
             font-size: 16px;
         }
-        
+
         button {
             background: #1e90ff;
             color: white;
             border: none;
+            border-radius: 6px;
             cursor: pointer;
-            border-radius: 4px;
-            transition: 0.3s ease;
+            transition: 0.3s;
         }
-        
+
         button:hover {
             background: #0066cc;
         }
-        
 
+        #image-picker,
+        #color-picker {
+            display: none;
+        }
+
+        .selected-file-name {
+            font-size: 14px;
+            color: #333;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Image Editor</h1>
         <form action="/process" method="POST" enctype="multipart/form-data">
-            <label>Select Image:</label>
-            <input type="file" name="image" required><br>
+            <!-- Main Image Upload -->
+            <div>
+                <div class="file-label">Upload Main Image:</div>
+                <div id="main-dropzone" class="dropzone">Click or Drag & Drop Image Here</div>
+                <input type="file" name="image" id="main-upload" class="hidden-input" accept="image/*" required>
+                <div id="main-filename" class="selected-file-name"></div>
+            </div>
 
+            <!-- Action Selection -->
             <label>Action:</label>
-            <select name="action" id="action-select">
-                <option value="">Edit Image</option>
+            <select name="action" id="action-select" required>
+                <option value="">Choose Action</option>
                 <option value="remove">Remove Background</option>
                 <option value="replace_image">Replace with Image</option>
                 <option value="replace_color">Replace with Color</option>
             </select>
 
-            <div id="bg-options">
-                <label>Background Type:</label>
-                <select name="bg_type" id="bg-type-select">
-                    <option value="">Choose</option>
-                    <option value="image">Image</option>
-                    <option value="color">Color</option>
-                </select>
+            <!-- Background Image Upload (if "replace_image") -->
+            <div id="image-picker">
+                <div class="file-label">Upload Background Image:</div>
+                <div id="bg-dropzone" class="dropzone">Click or Drag & Drop Background Image</div>
+                <input type="file" name="background_image" id="bg-upload" class="hidden-input" accept="image/*">
+                <div id="bg-filename" class="selected-file-name"></div>
+            </div>
 
-                <!-- Image Picker -->
-                <div id="image-picker">
-                    <label>Choose Background Image:</label>
-                    <select name="background">
-                        {% for bg in backgrounds %}
-                        <option value="{{ bg }}">{{ bg }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- Color Picker -->
-                <div id="color-picker">
-                    <label>Pick Color:</label>
-                    <input type="color" name="background" value="#ffffff">
-                </div>
+            <!-- Color Picker (if "replace_color") -->
+            <div id="color-picker">
+                <label>Pick Background Color:</label>
+                <input type="color" name="background_color" value="#ffffff">
             </div>
 
             <button type="submit">Submit</button>
         </form>
-
         <a href="/history">View History</a>
     </div>
 
     <script>
-        // Toggle UI elements based on user action and background type
         document.addEventListener('DOMContentLoaded', function () {
-            const bgTypeSelect = document.getElementById('bg-type-select');
             const actionSelect = document.getElementById('action-select');
             const imagePicker = document.getElementById('image-picker');
             const colorPicker = document.getElementById('color-picker');
-            const bgOptions = document.getElementById('bg-options');
 
-        function updateUI() {
-            const action = actionSelect.value;
-            const bgType = bgTypeSelect.value;
+            const mainDropzone = document.getElementById('main-dropzone');
+            const mainUpload = document.getElementById('main-upload');
+            const mainFilename = document.getElementById('main-filename');
 
-            // Show/hide background section based on action
-            bgOptions.style.display = (action === 'replace_image' || action === 'replace_color') ? 'block' : 'none';
+            const bgDropzone = document.getElementById('bg-dropzone');
+            const bgUpload = document.getElementById('bg-upload');
+            const bgFilename = document.getElementById('bg-filename');
 
-            // Show color or image picker
-            imagePicker.style.display = (bgType === 'image') ? 'block' : 'none';
-            colorPicker.style.display = (bgType === 'color') ? 'block' : 'none';
-        }
+            function setupDropzone(dropzone, fileInput, filenameDisplay) {
+                dropzone.addEventListener('click', () => fileInput.click());
 
-        actionSelect.addEventListener('change', updateUI);
-        bgTypeSelect.addEventListener('change', updateUI);
+                dropzone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.add('dragover');
+                });
 
-        updateUI(); // Initialize on page load
+                dropzone.addEventListener('dragleave', () => {
+                    dropzone.classList.remove('dragover');
+                });
+
+                dropzone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropzone.classList.remove('dragover');
+
+                    if (e.dataTransfer.files.length) {
+                        fileInput.files = e.dataTransfer.files;
+                        filenameDisplay.textContent = `Selected: ${e.dataTransfer.files[0].name}`;
+                    }
+                });
+
+                fileInput.addEventListener('change', () => {
+                    if (fileInput.files.length) {
+                        filenameDisplay.textContent = `Selected: ${fileInput.files[0].name}`;
+                    }
+                });
+            }
+
+            setupDropzone(mainDropzone, mainUpload, mainFilename);
+            setupDropzone(bgDropzone, bgUpload, bgFilename);
+
+            function updateUI() {
+                const action = actionSelect.value;
+                imagePicker.style.display = (action === 'replace_image') ? 'block' : 'none';
+                colorPicker.style.display = (action === 'replace_color') ? 'block' : 'none';
+
+                if (action !== 'replace_image') {
+                    bgUpload.value = '';
+                    bgFilename.textContent = '';
+                }
+            }
+
+            actionSelect.addEventListener('change', updateUI);
+            updateUI();
         });
-
     </script>
 </body>
 </html>
