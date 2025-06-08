@@ -35,40 +35,61 @@ def index():
 @app.route('/process', methods=['POST'])
 def process():
     """
-    handles image upload and calls process_image()
-    for background removel or replacement (image or color).
+    Handles image upload and calls process_image()
+    for background removal or replacement (image or color).
     """
     if 'image' not in request.files:
         return redirect(request.url)
     
     file = request.files['image']
     if file and allowed_file(file.filename):
-        # Save image with unique name
+        # Save uploaded main image with a unique name
         filename = secure_filename(file.filename)
         unique_name = f"{uuid.uuid4().hex}_{filename}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
         file.save(filepath)
 
-        # Get from options
+        # Get action and background type
         action = request.form.get('action')             # 'remove', 'replace_image', 'replace_color'
-        selected_bg = request.form.get('background')    # background filename and color code
         bg_type = request.form.get('bg_type')           # 'image' or 'color'
+        selected_bg = request.form.get('background')    # used for predefined image or color hex
+
+        background_path = None  # Default to None
+
+        # Handle uploaded background image if action is 'replace_image'
+        if action == 'replace_image':
+            bg_file = request.files.get('background_image')
+            if bg_file and allowed_file(bg_file.filename):
+                bg_filename = secure_filename(bg_file.filename)
+                unique_bg_name = f"{uuid.uuid4().hex}_{bg_filename}"
+                bg_filepath = os.path.join(app.config['UPLOAD_FOLDER'], unique_bg_name)
+                bg_file.save(bg_filepath)
+
+                background_path = bg_filepath  # full path to uploaded background
+                bg_type = 'image'
+            else:
+                # fallback to selected predefined background
+                background_path = selected_bg
+                bg_type = 'image'
+
+        elif action == 'replace_color':
+            background_path = request.form.get('background_color')  # hex value
+            bg_type = 'color'
 
         # Process the image
         output_path = process_image(
             input_path=filepath,
             action=action,
-            background=selected_bg,
+            background=background_path,
             bg_type=bg_type,
             history_folder=app.config['HISTORY_FOLDER'],
             background_folder=app.config['BACKGROUND_FOLDER']
         )
 
-        # Only send the relative path after `static/`
-        relative_output = os.path.relpath(output_path, app.static_folder).replace('\\','/')    # e.g. 'history/processed_xyz.png'
+        # Return relative path to the image (inside /static/history/)
+        relative_output = os.path.relpath(output_path, app.static_folder).replace('\\', '/')
         return render_template('result.html', output_image=relative_output)
 
-    
     return redirect(url_for('index'))
 
 

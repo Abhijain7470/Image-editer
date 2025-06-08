@@ -31,11 +31,19 @@ def process_image(input_path, action, background=None, bg_type=None, fill_color=
 
     # Step 2: Replace with image or color background
     if action == 'replace_image' and background and bg_type == 'image':
-        bg_path = os.path.join(background_folder or 'static/background_samples', background)
-        background_img = Image.open(bg_path).convert("RGBA")
-        background_img = background_img.resize(result.size)
-        background_img.paste(result, (0, 0), result)
-        result = background_img
+        # Determine if background is a path or a filename
+        if os.path.isfile(background):      # It's a full path (uploaded background)
+            bg_path = background
+        else:   # It's a predefined filename
+            bg_path = os.path.join(background_folder or 'static/background_samples',background)
+
+        try:
+            background_img = Image.open(bg_path).convert("RGBA")
+            background_img = background_img.resize(result.size)
+            background_img.paste(result, (0, 0), result)
+            result = background_img
+        except Exception as e:
+            print(f"Failed to open background image: {e}")
 
     elif action == 'replace_color' and background and bg_type == 'color':
         try:
