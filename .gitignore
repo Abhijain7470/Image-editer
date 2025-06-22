@@ -1,1 +1,37 @@
+# Python-specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.db
+
+# Virtual Environment
 venv/
+env/
+
+# Flask instance folder (for SQLite and configs)
+instance/
+
+# VS Code settings
+.vscode/
+
+# Flask static user-generated content
+static/history/
+static/uploads/
+static/background_samples/user_uploaded/
+
+# Environment variables and secrets
+.env
+
+# Logs
+*.log
+
+# Mac system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+
+# Pytest cache
+.pytest_cache/
