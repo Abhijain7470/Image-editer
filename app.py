@@ -21,6 +21,7 @@ def allowed_file(filename):
 # -------------------- ROUTES --------------------
 
 # 1. Home Page Route
+# 1. Home Page Route
 @app.route('/')
 def index():
     """
@@ -28,7 +29,8 @@ def index():
     choose to remove/replace background, and view background options.
     """
     background_images = os.listdir(app.config['BACKGROUND_FOLDER'])
-    return render_template('index.html', backgrounds=background_images)
+    return render_template('replace_background.html', backgrounds=background_images)
+
 
 
 # 2. Image Processing Route
