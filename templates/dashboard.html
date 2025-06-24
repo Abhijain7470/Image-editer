@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Image Editor Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            width: 240px;
+            background-color: #1e293b;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 10px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 12px 20px;
+            color: #e2e8f0;
+            text-decoration: none;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            background-color: #334155;
+        }
+
+        .user-profile {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-profile img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            bottom: 60px;
+            left: 20px;
+            background-color: #334155;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            width: 200px;
+            z-index: 10;
+        }
+
+        .user-profile:hover .user-dropdown {
+            display: block;
+        }
+
+        .user-dropdown a {
+            display: block;
+            color: #38bdf8;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        .logout {
+            color: #f87171;
+            font-size: 14px;
+            text-decoration: none;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 40px 20px;
+        }
+
+        .main h1 {
+            font-size: 24px;
+            margin-bottom: 2rem;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 250px;
+            height: 300px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+            transition: 0.2s ease-in-out;
+            text-decoration: none;
+            color: black;
+            margin-left: 15px;
+        }
+
+        .card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: solid rgb(93, 20, 196);
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media screen and (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                height: 100%;
+                transform: translateX(-100%);
+                z-index: 1000;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .main h1{
+                margin-left: 35px;
+            }
+
+            .hamburger {
+                display: block !important;
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                z-index: 1100;
+                cursor: pointer;
+            }
+
+            .hamburger div {
+                width: 25px;
+                height: 3px;
+                background-color: #192334;
+                margin: 5px 0;
+                /* box-shadow: 0 4px 6px rgba(249, 247, 247, 0.15); */
+            }
+
+            .hamburger:hover {
+            transform: scale(1.03);
+            box-shadow: 0px 0px 0px 3px rgba(156, 205, 235, 0.5);
+            }
+
+            .card-container {
+                justify-content: center;
+            }
+        }
+
+        .hamburger {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="hamburger" onclick="toggleSidebar()">
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div>
+            <h2>🖌️ ImageEditor</h2>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">🏠 Home</a>
+                <a href="{{ url_for('history') }}">📜 History</a>
+                <a href="{{ url_for('upload_background') }}">📂 Upload Background</a>
+            </div>
+        </div>
+        <div class="user-profile">
+            <div class="user-info">
+                <img src="/static/images/default_user.png" alt="User Pic">
+                <span>{{ username }}</span>
+            </div>
+            <div class="user-dropdown">
+                <p><strong>{{ username }}</strong></p>
+                <p>Email: {{ email }}</p>
+                <a href="#">👤 View Profile</a>
+                <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <h1>👋 Welcome, {{ username }}!</h1>
+        <div class="card-container">
+            <a href="{{ url_for('index') }}" class="card">
+                <img src="https://petapixel.com/assets/uploads/2022/05/remove-background-in-photoshop.jpg" alt="Replace Background">
+                <h3>🖼️ Replace Background</h3>
+                <p>Remove or replace image background with another image or color.</p>
+            </a>
+            <a href="{{ url_for('history') }}" class="card">
+                <img src="https://img.icons8.com/?size=100&id=113644&format=png&color=000000" alt="Design History">
+                <h3>📜 My Design History</h3>
+                <p>View all the images you've edited recently.</p>
+            </a>
+            <div class="card">
+                <img src="https://img.icons8.com/?size=100&id=qZ1FibjKOsRJ&format=png&color=000000" alt="Upload Background">
+                <h3>📂 Upload Background</h3>
+                <p>Add your own custom backgrounds for future use.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>
