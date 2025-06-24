@@ -240,7 +240,7 @@
         <div>
             <h2>🖌️ ImageEditor</h2>
             <div class="nav-links">
-                <a href="{{ url_for('index') }}">🏠 Home</a>
+                <a href="{{ url_for('dashboard') }}">🏠 Home</a>
                 <a href="{{ url_for('history') }}">📜 History</a>
                 <a href="{{ url_for('upload_background') }}">📂 Upload Background</a>
             </div>
@@ -267,26 +267,28 @@
                 <div></div>
             </div>
 
-            <h1>👋 Welcome, {{ username }}!</h1>
+            <h1>👋 Welcome, {{ username or "User"}}!</h1>
         </nav>
         <div class="card-container">
-            <a href="{{ url_for('index') }}" class="card">
+            <a href="{{ url_for('replace_background') }}" class="card">
                 <img src="https://petapixel.com/assets/uploads/2022/05/remove-background-in-photoshop.jpg"
                     alt="Replace Background">
                 <h3>🖼️ Replace Background</h3>
                 <p>Remove or replace image background with another image or color.</p>
             </a>
+
             <a href="{{ url_for('history') }}" class="card">
                 <img src="https://img.icons8.com/?size=100&id=113644&format=png&color=000000" alt="Design History">
                 <h3>📜 My Design History</h3>
                 <p>View all the images you've edited recently.</p>
             </a>
-            <div class="card">
+
+            <a href="{{ url_for('upload_background') }}" class="card">
                 <img src="https://img.icons8.com/?size=100&id=qZ1FibjKOsRJ&format=png&color=000000"
                     alt="Upload Background">
                 <h3>📂 Upload Background</h3>
                 <p>Add your own custom backgrounds for future use.</p>
-            </div>
+            </a>
         </div>
 
         <footer class="footer">
